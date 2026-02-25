@@ -5,7 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
 
-<link rel="stylesheet" type="text/css" href="{{ asset('css/animate.min.css') }}">
+
+   
+  <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+  <meta name="author" content="surfside media" />
+      <link rel="stylesheet" type="text/css" href="{{ asset('css/animate.min.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ asset('css/animation.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ asset('css/bootstrap.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ asset('css/bootstrap-select.min.css') }}">
@@ -30,11 +34,12 @@
     </div>
 </div> -->
 
+
                 <div class="section-menu-left">
                     <div class="box-logo">
                         <a href="index.html" id="site-logo-inner">
-                            <img class="" id="logo_header" alt="" src="images/logo/logo.png"
-                                data-light="images/logo/logo.png" data-dark="images/logo/logo.png">
+                            <img class="" id="logo_header" alt="" src="{{ asset('images/logo/logo.png') }}"
+                                data-light="{{ asset('images/logo/logo.png') }}" data-dark="{{ asset('images/logo/logo.png') }}">
                         </a>
                         <div class="button-show-hide">
                             <i class="icon-menu-left"></i>
@@ -45,7 +50,7 @@
                             <div class="center-heading">Main Home</div>
                             <ul class="menu-list">
                                 <li class="menu-item">
-                                    <a href="index.html" class="">
+                                    <a href="{{ route('admin.index') }}" class="">
                                         <div class="icon"><i class="icon-grid"></i></div>
                                         <div class="text">Dashboard</div>
                                     </a>
@@ -84,7 +89,7 @@
                                             </a>
                                         </li>
                                         <li class="sub-menu-item">
-                                            <a href="brands.html" class="">
+                                            <a href="{{ route('admin.brands') }}" class="">
                                                 <div class="text">Brands</div>
                                             </a>
                                         </li>
@@ -136,7 +141,7 @@
                                 <li class="menu-item">
                                     <a href="coupons.html" class="">
                                         <div class="icon"><i class="icon-grid"></i></div>
-                                        <div class="text">Coupns</div>
+                                        <div class="text">Coupons</div>
                                     </a>
                                 </li>
 
@@ -152,6 +157,17 @@
                                         <div class="icon"><i class="icon-settings"></i></div>
                                         <div class="text">Settings</div>
                                     </a>
+                                </li>
+
+                                 <li class="menu-item">
+                                  <form method=POST action="{{ route('logout') }}" id="logout-form">
+                                    @csrf
+                                    <a href="settings.html" class="" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                                        <div class="icon"><i class="icon-settings"></i></div>
+                                        <div class="text">Logout</div>
+                                    </a>
+                                  </form>
+                                  
                                 </li>
                             </ul>
                         </div>
@@ -438,7 +454,7 @@
                         </div>
                     </div>
                     <div class="main-content">
-                        @yield('content')
+                      @yield('content')
 
                         <div class="bottom-page">
                             <div class="body-text">Copyright © 2024 SurfsideMedia</div>
@@ -554,6 +570,6 @@
             jQuery(window).on("resize", function () { });
         })(jQuery);
     </script>
-    @stack('scripts')
+      @stack('scripts')
 </body>
 </html>
