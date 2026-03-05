@@ -2,10 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Brand;
+use Carbon\Carbon; 
+use Illuminate\Http\Request;
 use Illuminate\Support\Str;
-use Intervetion\image\Laravel\Facades\Image;
+use Illuminate\Support\Facades\File;
+use Intervention\Image\Laravel\Facades\Image;
+
+
 class AdminController extends Controller
 {
    public function index()
@@ -33,24 +37,74 @@ class AdminController extends Controller
 
         $brand = new Brand();
         $brand->name = $request->name;
-        $brand->slug = str_slug($request->name);
+        $brand->slug = Str::slug($request->name);
         $image = $request->file('image');
-        $file_extention = $request->file('image')->extension();
-        $file_name = carbon::new()->timestamp().'.'.$file_extention;
+         $file_extension = $image->extension();
+       $file_name = now()->timestamp . '.' . $file_extension;
         $this->GeneracteBrandTumballsImage($image, $file_name);
         $brand->image = $file_name;
         $brand->save();
         return redirect()->route('admin.brands')->with('status', 'Brand has been added successfully.');
     }
-
-    public function GeneracteBrandTumballsImage($image, $imageName)
+    
+    public function brand_edit($id)
     {
-     $destinationPath = public_path('uploads/brands');
-     $img = Image::read($image->Path);
-     $img->cover(124,124,"top");
-     $img->resize(124,124,function ($constraint) {
-         $constraint->aspectRatio();
-     })->save($destinationPath.'/'.$imageName);
-      
+        $brand = Brand::find($id);
+        return view('admin.brand-edit', compact('brand'));
     }
+   
+public function brand_update(Request $request)
+    {
+        $request->validate([
+            'name' => 'required',
+            'slug' => 'required|unique:brands,slug'.$request->id, 
+            'image' => 'mimes:jpeg,png,jpg,gif,svg|max:2048',
+        ]);
+
+
+        $brand = Brand::find($request->id);
+        $brand->name = $request->name;
+        $brand->slug = Str::slug($request->name);
+        if ($request->hasFile('image')) {
+            if(file_exists(public_path('uploads/brands/' . $brand->image))){
+                File::delete(public_path('uploads/brands/' . $brand->image));
+            }
+            $image = $request->file('image');
+            $file_extension = $image->extension();
+            $file_name = now()->timestamp . '.' . $file_extension;
+            $this->GeneracteBrandTumballsImage($image, $file_name);
+            $brand->image = $file_name;
+       }
+        $brand->save();
+        return redirect()->route('admin.brands')->with('status', 'Brand has been updated successfully.');
+    }
+
+   public function GeneracteBrandTumballsImage($image, $imageName)
+{
+    // Créer le dossier de destination s'il n'existe pas
+    $destinationPath = public_path('uploads/brands');
+    if (!file_exists($destinationPath)) {
+        mkdir($destinationPath, 0755, true);
+    }
+
+    // Charger l'image (path() en minuscules)
+    $img = Image::read($image->path());
+
+    // Redimensionner et recadrer pour obtenir exactement 124x124 pixels, aligné en haut
+    $img->cover(124, 124, 'top');
+
+    // Sauvegarder l'image
+    $img->save($destinationPath . '/' . $imageName);
+}
+
+    
+public function brand_delete($id)
+{
+    $brand = Brand::find($id);
+    if(file_exists(public_path('uploads/brands/' . $brand->image))){
+        File::delete(public_path('uploads/brands/' . $brand->image));
+    }
+    $brand->delete();
+    return redirect()->route('admin.brands')->with('status', 'Brand has been deleted successfully.');
+}
 }

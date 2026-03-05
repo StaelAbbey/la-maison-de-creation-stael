@@ -64,28 +64,22 @@
                                                             </td>
                                                             <td>{{ $brand->slug }}</td>
                                                             <td><a href="#" target="_blank">0</a></td>
-                                                            <td>
+                                                            <td>                                                      
                                                                 <div class="list-icon-function">
-                                                                    <a href="#">
+                                                                    <a href="{{ route('admin.brand.edit', $brand->id) }}">
                                                                         <div class="item edit">
                                                                             <i class="icon-edit-3"></i>
                                                                         </div>
                                                                     </a>
-                                                                    <form action="#" method="POST">
+                                                                    <form action="{{ route('admin.brand.delete', $brand->id) }}" method="POST" style="display:inline;">
                                                                         @csrf
                                                                         @method('DELETE')
                                                                         <button type="submit" class="item text-danger delete" style="border: none; background: none;">
-                                                                            <i class="icon-trash
-                                                    <tr>
-                                                        <td>4</td>
-                                                        <td class="pname">
-                                                            <div class="image">
-                                                                <img src="1718066367.html" alt="" class="image">
-                                                            </div>
-                                                            <div class="name">
-                                                                <a href="#" class="body-title-2">Brand4</a>
-                                                            </div>
-                                                        </td>
+                                                                            <i class="icon-trash-2"></i>
+                                                                        </button>
+                                                                    </form>
+                                                                </div>
+                                                            </td>
                                                         <td>brand4</td>
                                                         <td><a href="#" target="_blank">1</a></td>
                                                         <td>
@@ -116,3 +110,25 @@
                             </div>
                         </div>
 @endsection
+
+@push('scripts')
+<script>
+    $(function(){
+        $('.delete').on('click', function(e){
+            e.preventDefault();
+            var form = $(this).closest('form');
+            swal({
+                title: "Are you sure?",
+                text: "Once deleted, you will not be able to recover this brand!",
+                icon: "warning",
+                buttons: ["No", "Yes"],
+                confirmButtonColor: '#3085d6',
+            }).then(function(result){
+                if(result){
+                    form.submit();
+                }
+            });
+        });
+    });
+</script>
+@endpush
