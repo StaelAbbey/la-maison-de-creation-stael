@@ -32,10 +32,13 @@
                                                 </div>
                                             </form>
                                         </div>
-                                        <a class="tf-button style-1 w208" href="add-product.html"><i
+                                        <a class="tf-button style-1 w208" href="{{ route('admin.produit_add') }}"><i
                                                 class="icon-plus"></i>Add new</a>
                                     </div>
                                     <div class="table-responsive">
+                                          @if(session()->has('status'))
+                                                <p class="alert alert-success ">{{ session()->get('status') }}</p>
+                                            @endif
                                         <table class="table table-striped table-bordered">
                                             <thead>
                                                 <tr>
@@ -68,8 +71,8 @@
                                                     <td>{{ $produit->regular_price }}</td>
                                                     <td>{{ $produit->sale_price }}</td>
                                                     <td>{{ $produit->SKU }}</td>
-                                                    <td>{{ $produit->category->name }}</td>
-                                                    <td>{{ $produit->brand->name }}</td>
+                                                    <td>{{ $produit->category->name ?? 'Aucune catégorie' }}</td>
+                                                    <td>{{ $produit->brand->name ?? 'Aucune marque' }}</td>
                                                     <td>{{ $produit->featured == 0 ? 'Yes' : 'No' }}</td>
                                                     <td>{{ $produit->stock_status }}</td>
                                                     <td>{{ $produit->quantity }}</td>
@@ -80,12 +83,14 @@
                                                                     <i class="icon-eye"></i>
                                                                 </div>
                                                             </a>
-                                                            <a href="#">
+                                                            <a href="{{ route('admin.produit.edit', ['id' => $produit->id]) }}">
                                                                 <div class="item edit">
                                                                     <i class="icon-edit-3"></i>
                                                                 </div>
                                                             </a>
-                                                            <form action="#" method="POST">
+                                                            <form action="{{ route('admin.produit.delete', ['id' => $produit->id]) }}" method="POST">
+                                                                @csrf
+                                                                @method('DELETE')
                                                                 <div class="item text-danger delete">
                                                                     <i class="icon-trash-2"></i>
                                                                 </div>
@@ -107,3 +112,25 @@
                             </div>
                         </div>
 @endsection
+
+@push('scripts')
+<script>
+    $(function(){
+        $('.delete').on('click', function(e){
+            e.preventDefault();
+            var form = $(this).closest('form');
+            swal({
+                title: "Are you sure?",
+                text: "Once deleted, you will not be able to recover this brand!",
+                icon: "warning",
+                buttons: ["No", "Yes"],
+                confirmButtonColor: '#3085d6',
+            }).then(function(result){
+                if(result){
+                    form.submit();
+                }
+            });
+        });
+    });
+</script>
+@endpush
